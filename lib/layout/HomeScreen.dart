@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Auth/ProfilePage.dart';
+import '../Cart/CartScreen.dart';
 import '../cubit/ProfileCubit.dart';
-import '../cubit/CartCubit.dart';
 import 'FavoritesScreen.dart';
 import 'HomeContentScreen.dart';
 import 'SearchScreen.dart';
@@ -98,9 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }),
       ),
     );
-  }
-
-  BottomNavigationBarItem _buildNavItem({required IconData icon, required String label}) {
+  }BottomNavigationBarItem _buildNavItem({required IconData icon, required String label}) {
     return BottomNavigationBarItem(
       icon: Container(
         padding: EdgeInsets.all(8), // Added padding around the icon
@@ -148,61 +146,93 @@ class _HomeScreenState extends State<HomeScreen> {
 
     var profile = state.profile!;
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(profile['profile_image'] ??
-                      'https://via.placeholder.com/150'),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  '${profile['first_name'] ?? 'Unknown'} ${profile['last_name'] ?? 'User'}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Color(0xFF4F4F4F),
+      child: Container(
+        color: Color(0xFFFAFAFA), // Off White for the drawer background
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFFF47C7C), // Warm Pink for the header background
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Color(0xFF4F4F4F), // Charcoal Gray for the border
+                    child: CircleAvatar(
+                      radius: 36,
+                      backgroundImage: NetworkImage(profile['profile_image'] ??
+                          'https://via.placeholder.com/150'),
+                    ),
                   ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  profile['phone_number'] ?? 'No phone number',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF4F4F4F),
+                  SizedBox(height: 10),
+                  Flexible(
+                    child: Text(
+                      '${profile['first_name'] ?? 'Unknown'} ${profile['last_name'] ?? 'User'}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.white, // White text for the name
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 5),
+                  Flexible(
+                    child: Text(
+                      profile['phone_number'] ?? 'No phone number',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFFFAFAFA), // Off White for the phone number
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          ListTile(
-            title: Text('Profile'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
-              );
-            },
-          ),
-          ListTile(
-            title: Text('Logout'),
-            onTap: () async {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              String? token = prefs.getString('auth_token');
+            ListTile(
+              leading: Icon(Icons.person, color: Color(0xFFF47C7C)), // Warm Pink for icons
+              title: Text(
+                'Profile',
+                style: TextStyle(
+                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
+                  fontSize: 16,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+              },
+            ),
+            Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
+            ListTile(
+              leading: Icon(Icons.logout, color: Color(0xFFF47C7C)), // Warm Pink for icons
+              title: Text(
+                'Logout',
+                style: TextStyle(
+                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
+                  fontSize: 16,
+                ),
+              ),
+              onTap: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                String? token = prefs.getString('auth_token');
 
-              if (token != null) {
-                await context.read<ProfileCubit>().signOut(token);
-                await prefs.remove('auth_token');
-                Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-              }
-            },
-          ),
-        ],
+                if (token != null) {
+                  await context.read<ProfileCubit>().signOut(token);
+                  await prefs.remove('auth_token');
+                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                }
+              },
+            ),
+            Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
+          ],
+        ),
       ),
     );
   }
