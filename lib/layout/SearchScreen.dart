@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../Product/ProductScreen.dart';
 import '../cubit/ProductSearchCubit.dart';
 import '../cubit/StoreSearchCubit.dart';
 
@@ -103,11 +104,23 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                         ),
                         ListView.builder(
                           shrinkWrap: true,
+
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: state.products.length,
                           itemBuilder: (context, index) {
                             var product = state.products[index];
                             return ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProductDetailsScreen(
+                                      productId: product['id'].toString(), // Pass the product ID
+                                    ),
+                                  ),
+                                );
+                              },
+
                               leading: product['image'] != null
                                   ? Image.network(product['image'])
                                   : null,
