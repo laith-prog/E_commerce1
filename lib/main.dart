@@ -29,6 +29,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'E-Commerce App',
+      routes: {
+        '/login': (context) => LoginScreen(), // Replace with your actual register screen
+        '/home': (context) => HomeScreen(),
+      },
       home: token == null ? LoginScreen() : HomeScreen(),  // Navigate based on token
     );
   }
