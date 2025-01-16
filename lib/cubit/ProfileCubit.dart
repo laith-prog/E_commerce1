@@ -104,5 +104,25 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
+  Future<void> signOut(String token) async {
+    try {
+      final url = Uri.parse('http://10.0.2.2:8000/api/auth/sign-out'); // Replace with your endpoint
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Signed out successfully');
+      } else {
+        print('Failed to sign out: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during sign out: $e');
+    }
+  }
 
 }

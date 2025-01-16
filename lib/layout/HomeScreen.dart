@@ -113,10 +113,17 @@ class _HomeScreenState extends State<HomeScreen> {
             title: Text('Logout'),
             onTap: () async {
               SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs.remove('auth_token');
-              Navigator.pushReplacementNamed(context, '/login');
+              String? token = prefs.getString('auth_token');
+
+              if (token != null) {
+                // Call the signOut method from the ProfileCubit
+                await context.read<ProfileCubit>().signOut(token);
+                await prefs.remove('auth_token'); // Remove the token locally
+                Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+              }
             },
           ),
+
         ],
       ),
     );
