@@ -1,18 +1,23 @@
+import 'package:e_commerce1/SplashScreen/SplashScreen.dart';
+import 'package:e_commerce1/cubit/ProfileCubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'SplashScreen/SplashScreen.dart';
 import 'layout/HomeScreen.dart';
 import 'Auth/LoginScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize SharedPreferences and check if token exists
+  // Check if the token exists in shared preferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('auth_token');
 
-  // Now run the app and pass the token as parameter to MyApp
-  runApp(MyApp(token: token));
+  runApp(
+    BlocProvider(create: (context)=>ProfileCubit()..fetchProfile(),
+    child: MyApp(token: token,),
+    )
+    );
 }
 
 class MyApp extends StatelessWidget {
@@ -24,11 +29,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'E-Commerce App',
+      home: SplashScreen(),
       routes: {
-        '/login': (context) => LoginScreen(),
+        '/login': (context) => LoginScreen(), // Replace with your actual register screen
         '/home': (context) => HomeScreen(),
-      },
-      home: SplashScreen(), // Set SplashScreen as the initial screen
+      },// Navigate based on token
     );
   }
 }
