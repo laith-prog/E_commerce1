@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Auth/ProfilePage.dart';
-import '../Cart/CartScreen.dart';
 import '../cubit/ProfileCubit.dart';
 import '../cubit/CartCubit.dart';
 import 'FavoritesScreen.dart';
 import 'HomeContentScreen.dart';
 import 'SearchScreen.dart';
-import 'OrdersScreen.dart';
+import 'cart.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

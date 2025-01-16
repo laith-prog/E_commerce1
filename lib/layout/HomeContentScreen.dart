@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../Product/ProductScreen.dart';
 import '../cubit/ProductCubit.dart';
-import '../cubit/StoreCubit.dart';
 import '../cubit/TrendingStoreCubit.dart';
 import '../stores/StoreDetailsScreen.dart';
 
