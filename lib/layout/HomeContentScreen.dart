@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../Product/ProductScreen.dart';
 import '../cubit/ProductCubit.dart';
 import '../cubit/StoreCubit.dart';
+import '../cubit/TrendingStoreCubit.dart';
+import '../stores/StoreDetailsScreen.dart';
 
 class HomeContentScreen extends StatelessWidget {
   @override
@@ -19,153 +22,287 @@ class HomeContentScreen extends StatelessWidget {
                 return Center(child: CircularProgressIndicator());
               }
 
-              return ListView(
-                children: [
-                  // Trending Products Section (Horizontal Scroll, Large Size)
-                  if (productsState.trendingProducts != null && productsState.trendingProducts!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Trending Products', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                    ),
-                  if (productsState.trendingProducts != null && productsState.trendingProducts!.isNotEmpty)
-                    Container(
-                      height: 250, // Adjust the height of the card container
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: productsState.trendingProducts!.length,
-                        itemBuilder: (context, index) {
-                          var product = productsState.trendingProducts![index];
-                          return Card(
-                            margin: EdgeInsets.symmetric(horizontal: 8.0),
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Container(
-                              width: 250, // Large size for trending products
-                              child: Column(
-                                children: [
-                                  Image.network(
-                                    product['image'] ?? 'https://via.placeholder.com/150',
-                                    height: 150,
-                                    width: 250,
-                                    fit: BoxFit.contain,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    product['name'] ?? 'Unknown Product',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    '\$${product['price']}',
-                                    style: TextStyle(fontSize: 16, color: Colors.green),
-                                  ),
-                                ],
+              return Scaffold(
+                backgroundColor: Color(0xFFFFF9F4),
+                body: NestedScrollView(
+                  headerSliverBuilder: (context, innerBoxIsScrolled) {
+                    return [
+                      SliverAppBar(
+                        toolbarHeight: 1,
+                        backgroundColor: Color(0xFF2C2C2C),
+                        expandedHeight: 600,
+                        floating: false,
+                        pinned: true,
+                        flexibleSpace: FlexibleSpaceBar(
+                          background: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.asset('assets/bag.jpg', fit: BoxFit.cover),
+                              Positioned(
+                                top: 80,
+                                left: 0,
+                                right: 20,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Fulfill your \nNeeds',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontSize: 70,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ];
+                  },
+                  body: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Best Selling Products Section
+                        if (productsState.bestSellingProducts != null && productsState.bestSellingProducts!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                            child: Text(
+                              'Best Selling Products',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF4F4F4F)),
+                            ),
+                          ),
+                        if (productsState.bestSellingProducts != null && productsState.bestSellingProducts!.isNotEmpty)
+                          Container(
+                            height: 250,
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: productsState.bestSellingProducts!.length,
+                              itemBuilder: (context, index) {
+                                var product = productsState.bestSellingProducts![index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProductDetailsScreen(
+                                          productId: product['id'].toString(),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Card(
+                                    margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    elevation: 12,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Container(
+                                      width: 210,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.white,
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(15),
+                                            child: Image.asset(
+                                              'assets/logo_transparent.png',
+                                              fit: BoxFit.cover,
+                                              width: 210,
+                                              height: 140,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            child: Text(
+                                              product['name'] ?? 'Unknown Product',
+                                              style: TextStyle(
+                                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            child: Text(
+                                              '\$${product['price']}',
+                                              style: TextStyle(fontSize: 14, color: Colors.green),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
 
-                  // Best Selling Products Section (Horizontal Scroll, Smaller Size)
-                  if (productsState.bestSellingProducts != null && productsState.bestSellingProducts!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Best Selling Products', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                    ),
-                  if (productsState.bestSellingProducts != null && productsState.bestSellingProducts!.isNotEmpty)
-                    Container(
-                      height: 200, // Adjust the height for smaller cards
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: productsState.bestSellingProducts!.length,
-                        itemBuilder: (context, index) {
-                          var product = productsState.bestSellingProducts![index];
-                          return Card(
-                            margin: EdgeInsets.symmetric(horizontal: 8.0),
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                        // Trending Stores Section
+                        if (storeState.stores != null && storeState.stores!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                            child: Text(
+                              'Trending Stores',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF4F4F4F)),
                             ),
-                            child: Container(
-                              width: 200, // Smaller size for best selling products
-                              child: Column(
-                                children: [
-                                  Image.network(
-                                    product['image'] ?? 'https://via.placeholder.com/150',
-                                    height: 130,
-                                    width: 200,
-                                    fit: BoxFit.cover,
+                          ),
+                        if (storeState.stores != null && storeState.stores!.isNotEmpty)
+                          Container(
+                            height: 250,
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: storeState.stores!.length,
+                              itemBuilder: (context, index) {
+                                var store = storeState.stores![index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => StoreDetailsScreen(
+                                            storeId: store['id'].toString()),
+                                      ),
+                                    );
+                                  },
+                                  child: Card(
+                                    margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    elevation: 12,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Container(
+                                      width: 220,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.white,
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(15),
+                                            child: Image.asset(
+                                              'assets/logo_transparent.png',
+                                              fit: BoxFit.cover,
+                                              width: 220,
+                                              height: 130,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            child: Text(
+                                              store['name'] ?? 'Unknown Store',
+                                              style: TextStyle(
+                                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    product['name'] ?? 'Unknown Product',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    '\$${product['price']}',
-                                    style: TextStyle(fontSize: 14, color: Colors.green),
-                                  ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
-                    ),
+                          ),
 
-                  // Trending Stores Section (Horizontal Scroll, Medium Size)
-                  if (storeState.stores != null && storeState.stores!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Trending Stores', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                    ),
-                  if (storeState.stores != null && storeState.stores!.isNotEmpty)
-                    Container(
-                      height: 200, // Adjust the height for medium-sized store cards
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: storeState.stores!.length,
-                        itemBuilder: (context, index) {
-                          var store = storeState.stores![index];
-                          return Card(
-                            margin: EdgeInsets.symmetric(horizontal: 8.0),
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                        // Trending Products Section (Make sure this is only rendered when there are products)
+                        if (productsState.trendingProducts != null && productsState.trendingProducts!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                            child: Text(
+                              'Trending Products',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF4F4F4F)),
                             ),
-                            child: Container(
-                              width: 220, // Medium size for stores
-                              child: Column(
-                                children: [
-                                  Image.network(
-                                    store['logo'] ?? 'https://via.placeholder.com/150',
-                                    height: 120,
-                                    width: 220,
-                                    fit: BoxFit.cover,
+                          ),
+                        if (productsState.trendingProducts != null && productsState.trendingProducts!.isNotEmpty)
+                          Container(
+                            height: 270,
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: productsState.trendingProducts!.length,
+                              itemBuilder: (context, index) {
+                                var product = productsState.trendingProducts![index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProductDetailsScreen(
+                                          productId: product['id'].toString(), // Pass the product ID
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Card(
+                                    margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    elevation: 12,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Container(
+                                      width: 240,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.white,
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(15),
+                                            child: Image.asset(
+                                              'assets/logo_transparent.png', // Local image
+                                              fit: BoxFit.cover,
+                                              width: 240,
+                                              height: 160,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            child: Text(
+                                              product['name'] ?? 'Unknown Product',
+                                              style: TextStyle(
+                                                  fontSize: 18, fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            child: Text(
+                                              '\$${product['price']}',
+                                              style: TextStyle(fontSize: 16, color: Colors.green),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    store['name'] ?? 'Unknown Store',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    store['description'] ?? 'No description',
-                                    style: TextStyle(fontSize: 14),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                      ],
                     ),
-                ],
+                  ),
+                ),
               );
             },
           );
