@@ -16,6 +16,11 @@ class FavoritesSuccess extends FavoritesState {
   FavoritesSuccess({required this.message, required this.isFavorited});
 }
 
+class FavoritesLoaded extends FavoritesState {
+  final List<dynamic> favorites;
+
+  FavoritesLoaded({required this.favorites});
+}
 class FavoritesError extends FavoritesState {
   final String message;
 
@@ -85,6 +90,31 @@ class FavoritesCubit extends Cubit<FavoritesState> {
         emit(FavoritesSuccess(message: data['message'], isFavorited: false));
       } else {
         emit(FavoritesError(message: 'Failed to remove product from favorites'));
+      }
+    } catch (e) {
+      emit(FavoritesError(message: e.toString()));
+    }
+  }
+  Future<void> fetchFavorites() async {
+    emit(FavoritesLoading());
+    try {
+      String token = await _getAuthToken();
+
+      if (token.isEmpty) {
+        emit(FavoritesError(message: 'No authentication token found'));
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/favorites'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        emit(FavoritesLoaded(favorites: data['favorites']));
+      } else {
+        emit(FavoritesError(message: 'Failed to fetch favorites'));
       }
     } catch (e) {
       emit(FavoritesError(message: e.toString()));
