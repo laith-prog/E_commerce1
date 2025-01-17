@@ -144,7 +144,6 @@ class CartCubit extends Cubit<CartState> {
         },
         body: json.encode({'cart_item_id': cartItemId}),
       );
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         emit(CartUpdated(message: data['message']));

@@ -7,15 +7,16 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFFAFAFA), // Off White for clean content sections
       appBar: AppBar(
-        backgroundColor: Color(0xFFF47C7C), // Warm Pink
-        elevation: 0,
+        backgroundColor: Color(0xFFF47C7C), // Warm Pink for brand alignment
+        elevation: 1,
         title: Text(
-          'Profile',
+          'My Profile',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
           ),
         ),
         centerTitle: true,
@@ -50,74 +51,53 @@ class ProfilePage extends StatelessWidget {
             String lastName = profile['last_name'] ?? 'User';
             String phoneNumber =
                 profile['phone_number'] ?? 'No phone number provided';
+            String location = profile['location'] ?? 'Location not specified';
             String profileImage = profile['profile_image'] ??
                 'https://via.placeholder.com/150';
 
             return SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Profile Image Section
+                  // Profile Header Section
                   Container(
-                    width: double.infinity,
-                    height: 350, // Bigger profile section
+                    padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
                     decoration: BoxDecoration(
-                      color: Color(0xFFFAFAFA), // Off White background
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 15,
-                          offset: Offset(0, 10),
-                        ),
-                      ],
+                      color: Color(0xFFF47C7C), // Warm Pink for header
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(30),
                         bottomRight: Radius.circular(30),
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Profile Image with Elevated Effect
-                        AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          width: 160, // Slightly bigger image
-                          height: 160,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 4,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 15,
-                                spreadRadius: 4,
-                              ),
-                            ],
-                          ),
-                          child: CircleAvatar(
-                            radius: 80,
-                            backgroundColor: Colors.white,
-                            child: ClipOval(
-                              child: Image.network(
-                                profileImage,
-                                fit: BoxFit.cover,
-                                width: 160,
-                                height: 160,
-                              ),
+                        CircleAvatar(
+                          radius: 70,
+                          backgroundColor: Colors.white,
+                          child: ClipOval(
+                            child: Image.network(
+                              profileImage,
+                              fit: BoxFit.cover,
+                              width: 140,
+                              height: 140,
                             ),
                           ),
                         ),
                         SizedBox(height: 20),
-                        // Full Name with Text Styling
                         Text(
                           '$firstName $lastName',
                           style: TextStyle(
-                            fontSize: 30, // Bigger font size for prominence
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF4F4F4F),
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -127,9 +107,9 @@ class ProfilePage extends StatelessWidget {
 
                   // Profile Details Section
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Card(
-                      elevation: 10,
+                      elevation: 8,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -138,7 +118,15 @@ class ProfilePage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Phone Number Section with Styling
+                            Text(
+                              'Account Information',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF4F4F4F), // Charcoal Gray
+                              ),
+                            ),
+                            SizedBox(height: 16),
                             Row(
                               children: [
                                 Icon(
@@ -147,17 +135,36 @@ class ProfilePage extends StatelessWidget {
                                 ),
                                 SizedBox(width: 12),
                                 Text(
-                                  'Phone: $phoneNumber',
+                                  phoneNumber,
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: Color(0xFF4F4F4F),
+                                    color: Color(0xFF4F4F4F), // Charcoal Gray
                                   ),
                                 ),
                               ],
                             ),
-                            SizedBox(height: 24),
-                            // Edit Profile Button with Elevated Style
+                            SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  color: Color(0xFFF47C7C), // Warm Pink
+                                ),
+                                SizedBox(width: 12),
+                                Text(
+                                  location,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF4F4F4F), // Charcoal Gray
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 30),
+
+                            // Edit Profile Button
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -168,14 +175,14 @@ class ProfilePage extends StatelessWidget {
                               },
                               child: Container(
                                 width: double.infinity,
-                                padding: EdgeInsets.symmetric(vertical: 16),
+                                padding: EdgeInsets.symmetric(vertical: 14),
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFF47C7C), // Warm Pink
+                                  color: Color(0xFFF47C7C), // Warm Pink CTA
                                   borderRadius: BorderRadius.circular(30),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 12,
+                                      blurRadius: 10,
                                       offset: Offset(0, 4),
                                     ),
                                   ],
@@ -196,16 +203,15 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 30),
 
-                  // Divider Section
+                  SizedBox(height: 40),
+
+                  // Additional Options (Optional Section)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Divider(
-                      thickness: 2,
-                      color: Color(0xFFE0E0E0), // Light Gray
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Divider(thickness: 1, color: Color(0xFFE0E0E0)), // Light Gray divider
                   ),
+
                   SizedBox(height: 20),
                 ],
               ),
