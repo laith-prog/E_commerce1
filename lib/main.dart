@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginScreen(), // Replace with your actual register screen
         '/home': (context) => HomeScreen(),
+        '/order': (context) => HomeScreen(),
       },// Navigate based on token
     );
   }

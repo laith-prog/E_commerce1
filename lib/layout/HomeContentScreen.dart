@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../Product/ProductScreen.dart';
-import '../cubit/ProductCubit.dart';
-import '../cubit/TrendingStoreCubit.dart';
+import '../cubit/TrendingProductCubit.dart';
+import '../cubit/TrendingStoresCubit.dart';
 import '../stores/StoreDetailsScreen.dart';
 
 class HomeContentScreen extends StatelessWidget {
@@ -11,7 +11,8 @@ class HomeContentScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => ProductsCubit()..fetchProducts()),
-        BlocProvider(create: (context) => TrendingStoresCubit()..fetchTrendingStores()),
+        BlocProvider(
+            create: (context) => TrendingStoresCubit()..fetchTrendingStores()),
       ],
       child: BlocBuilder<ProductsCubit, ProductsState>(
         builder: (context, productsState) {
@@ -68,37 +69,46 @@ class HomeContentScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Best Selling Products Section
-                        if (productsState.bestSellingProducts != null && productsState.bestSellingProducts!.isNotEmpty)
+                        if (productsState.bestSellingProducts != null &&
+                            productsState.bestSellingProducts!.isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 16.0),
                             child: Text(
                               'Best Selling Products',
                               style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF4F4F4F)),
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4F4F4F)),
                             ),
                           ),
-                        if (productsState.bestSellingProducts != null && productsState.bestSellingProducts!.isNotEmpty)
+                        if (productsState.bestSellingProducts != null &&
+                            productsState.bestSellingProducts!.isNotEmpty)
                           Container(
                             height: 250,
                             padding: const EdgeInsets.symmetric(vertical: 12.0),
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: productsState.bestSellingProducts!.length,
+                              itemCount:
+                                  productsState.bestSellingProducts!.length,
                               itemBuilder: (context, index) {
-                                var product = productsState.bestSellingProducts![index];
+                                var product =
+                                    productsState.bestSellingProducts![index];
                                 return GestureDetector(
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ProductDetailsScreen(
+                                        builder: (context) =>
+                                            ProductDetailsScreen(
                                           productId: product['id'].toString(),
                                         ),
                                       ),
                                     );
                                   },
                                   child: Card(
-                                    margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 8.0),
                                     elevation: 12,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
@@ -113,7 +123,8 @@ class HomeContentScreen extends StatelessWidget {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(15),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
                                             child: Image.asset(
                                               'assets/logo_transparent.png',
                                               fit: BoxFit.cover,
@@ -123,19 +134,25 @@ class HomeContentScreen extends StatelessWidget {
                                           ),
                                           SizedBox(height: 8),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12.0),
                                             child: Text(
-                                              product['name'] ?? 'Unknown Product',
+                                              product['name'] ??
+                                                  'Unknown Product',
                                               style: TextStyle(
-                                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12.0),
                                             child: Text(
                                               '\$${product['price']}',
-                                              style: TextStyle(fontSize: 14, color: Colors.green),
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.green),
                                             ),
                                           ),
                                         ],
@@ -148,16 +165,21 @@ class HomeContentScreen extends StatelessWidget {
                           ),
 
                         // Trending Stores Section
-                        if (storeState.stores != null && storeState.stores!.isNotEmpty)
+                        if (storeState.stores != null &&
+                            storeState.stores!.isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 16.0),
                             child: Text(
                               'Trending Stores',
                               style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF4F4F4F)),
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4F4F4F)),
                             ),
                           ),
-                        if (storeState.stores != null && storeState.stores!.isNotEmpty)
+                        if (storeState.stores != null &&
+                            storeState.stores!.isNotEmpty)
                           Container(
                             height: 250,
                             padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -171,13 +193,16 @@ class HomeContentScreen extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => StoreDetailsScreen(
-                                            storeId: store['id'].toString()),
+                                        builder: (context) =>
+                                            StoreDetailsScreen(
+                                                storeId:
+                                                    store['id'].toString()),
                                       ),
                                     );
                                   },
                                   child: Card(
-                                    margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 8.0),
                                     elevation: 12,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
@@ -192,7 +217,8 @@ class HomeContentScreen extends StatelessWidget {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(15),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
                                             child: Image.asset(
                                               'assets/logo_transparent.png',
                                               fit: BoxFit.cover,
@@ -202,11 +228,13 @@ class HomeContentScreen extends StatelessWidget {
                                           ),
                                           SizedBox(height: 8),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12.0),
                                             child: Text(
                                               store['name'] ?? 'Unknown Store',
                                               style: TextStyle(
-                                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
@@ -220,16 +248,21 @@ class HomeContentScreen extends StatelessWidget {
                           ),
 
                         // Trending Products Section (Make sure this is only rendered when there are products)
-                        if (productsState.trendingProducts != null && productsState.trendingProducts!.isNotEmpty)
+                        if (productsState.trendingProducts != null &&
+                            productsState.trendingProducts!.isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 16.0),
                             child: Text(
                               'Trending Products',
                               style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF4F4F4F)),
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4F4F4F)),
                             ),
                           ),
-                        if (productsState.trendingProducts != null && productsState.trendingProducts!.isNotEmpty)
+                        if (productsState.trendingProducts != null &&
+                            productsState.trendingProducts!.isNotEmpty)
                           Container(
                             height: 270,
                             padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -237,20 +270,24 @@ class HomeContentScreen extends StatelessWidget {
                               scrollDirection: Axis.horizontal,
                               itemCount: productsState.trendingProducts!.length,
                               itemBuilder: (context, index) {
-                                var product = productsState.trendingProducts![index];
+                                var product =
+                                    productsState.trendingProducts![index];
                                 return GestureDetector(
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ProductDetailsScreen(
-                                          productId: product['id'].toString(), // Pass the product ID
+                                        builder: (context) =>
+                                            ProductDetailsScreen(
+                                          productId: product['id']
+                                              .toString(), // Pass the product ID
                                         ),
                                       ),
                                     );
                                   },
                                   child: Card(
-                                    margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 8.0),
                                     elevation: 12,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
@@ -265,9 +302,11 @@ class HomeContentScreen extends StatelessWidget {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(15),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
                                             child: Image.asset(
-                                              'assets/logo_transparent.png', // Local image
+                                              'assets/logo_transparent.png',
+                                              // Local image
                                               fit: BoxFit.cover,
                                               width: 240,
                                               height: 160,
@@ -275,19 +314,25 @@ class HomeContentScreen extends StatelessWidget {
                                           ),
                                           SizedBox(height: 8),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12.0),
                                             child: Text(
-                                              product['name'] ?? 'Unknown Product',
+                                              product['name'] ??
+                                                  'Unknown Product',
                                               style: TextStyle(
-                                                  fontSize: 18, fontWeight: FontWeight.bold),
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12.0),
                                             child: Text(
                                               '\$${product['price']}',
-                                              style: TextStyle(fontSize: 16, color: Colors.green),
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.green),
                                             ),
                                           ),
                                         ],

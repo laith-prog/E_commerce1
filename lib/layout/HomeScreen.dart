@@ -1,8 +1,9 @@
+import 'package:e_commerce1/layout/Drawer/OrdersScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Auth/ProfilePage.dart';
-import '../Cart/CartScreen.dart';
+import '../cubit/CartCubit.dart';
 import '../cubit/ProfileCubit.dart';
 import 'FavoritesScreen.dart';
 import 'HomeContentScreen.dart';
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    HomeContentScreen(), // Your Home content with the header
+    HomeContentScreen(),
     SearchScreen(),
     CartScreen(),
     FavoritesScreen(),
@@ -26,20 +27,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProfileCubit()..fetchProfile(),
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => CartCubit()), // CartCubit
-        ],
-        child: BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => ProfileCubit()..fetchProfile(),
+        ),
+        BlocProvider(
+          create: (context) => CartCubit(),
+        ),
+      ],
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
           return Scaffold(
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(kToolbarHeight),
               child: Builder(
                 builder: (context) {
                   return AppBar(
-                    backgroundColor: Color(0xFF2C2C2C), // Dark Gray
+                    backgroundColor: Color(0xFF2C2C2C),
                     elevation: 0,
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             drawer: _buildDrawer(context, state),
-            body: _screens[_currentIndex], // Body content for each screen
+            body: _screens[_currentIndex],
             bottomNavigationBar: BottomNavigationBar(
               backgroundColor: Color(0xFF2C2C2C),
               currentIndex: _currentIndex,
@@ -84,9 +89,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   context.read<CartCubit>().fetchCart();
                 }
               },
-              selectedItemColor: Color(0xFFF47C7C), // Warm Pink for selected item
-              unselectedItemColor: Colors.grey, // Gray for unselected items
-              type: BottomNavigationBarType.fixed, // To display all items without shifting
+              selectedItemColor: Color(0xFFF47C7C),
+              unselectedItemColor: Colors.grey,
+              type: BottomNavigationBarType.fixed,
               items: [
                 _buildNavItem(icon: Icons.home, label: 'Home'),
                 _buildNavItem(icon: Icons.search, label: 'Search'),
@@ -95,21 +100,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           );
-        }),
+        },
       ),
     );
-  }BottomNavigationBarItem _buildNavItem({required IconData icon, required String label}) {
+  }
+
+  BottomNavigationBarItem _buildNavItem(
+      {required IconData icon, required String label}) {
     return BottomNavigationBarItem(
       icon: Container(
         padding: EdgeInsets.all(8), // Added padding around the icon
         decoration: BoxDecoration(
-          color: _currentIndex == _getIndexForLabel(label) ? Color(0xFFF47C7C) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12), // Rounded corners for the selected icon
+          color: _currentIndex == _getIndexForLabel(label)
+              ? Color(0xFFF47C7C)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(
+              12), // Rounded corners for the selected icon
         ),
         child: Icon(
           icon,
-          size: _currentIndex == _getIndexForLabel(label) ? 30 : 24, // Increase size for selected item
-          color: _currentIndex == _getIndexForLabel(label) ? Colors.white : Colors.grey,
+          size: _currentIndex == _getIndexForLabel(label) ? 30 : 24,
+          // Increase size for selected item
+          color: _currentIndex == _getIndexForLabel(label)
+              ? Colors.white
+              : Colors.grey,
         ),
       ),
       label: label,
@@ -160,7 +174,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: Color(0xFF4F4F4F), // Charcoal Gray for the border
+                    backgroundColor: Color(0xFF4F4F4F),
+                    // Charcoal Gray for the border
                     child: CircleAvatar(
                       radius: 36,
                       backgroundImage: NetworkImage(profile['profile_image'] ??
@@ -185,7 +200,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       profile['phone_number'] ?? 'No phone number',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFFFAFAFA), // Off White for the phone number
+                        color: Color(0xFFFAFAFA),
+                        // Off White for the phone number
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -194,7 +210,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.person, color: Color(0xFFF47C7C)), // Warm Pink for icons
+              leading: Icon(Icons.person, color: Color(0xFFF47C7C)),
+              // Warm Pink for icons
               title: Text(
                 'Profile',
                 style: TextStyle(
@@ -211,7 +228,32 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
             ListTile(
-              leading: Icon(Icons.logout, color: Color(0xFFF47C7C)), // Warm Pink for icons
+              leading: Icon(Icons.list_alt_outlined, color: Color(0xFFF47C7C)),
+              // Warm Pink for icons
+              title: Text(
+                'My Orders',
+                style: TextStyle(
+                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
+                  fontSize: 16,
+                ),
+              ),
+              onTap: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                String? token = prefs.getString('auth_token');
+
+                if (token != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => OrdersScreen(token: token)),
+                  );
+                }
+              },
+            ),
+            Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
+
+            ListTile(
+              leading: Icon(Icons.logout, color: Color(0xFFF47C7C)),
+              // Warm Pink for icons
               title: Text(
                 'Logout',
                 style: TextStyle(
@@ -226,7 +268,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (token != null) {
                   await context.read<ProfileCubit>().signOut(token);
                   await prefs.remove('auth_token');
-                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/login', (route) => false);
                 }
               },
             ),

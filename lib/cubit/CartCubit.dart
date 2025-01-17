@@ -1,11 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-
 
 abstract class CartState {}
 
@@ -15,7 +11,7 @@ class CartLoading extends CartState {}
 
 class CartLoaded extends CartState {
   final Map<String, dynamic> cart;
-  final String total; // Declare total here
+  final String total;
 
   CartLoaded({required this.cart, required this.total});
 }
@@ -38,19 +34,22 @@ class CartError extends CartState {
   CartError({required this.message});
 }
 
+class OrderCreated extends CartState {
+  final String message;
+
+  OrderCreated({required this.message});
+}
 
 class CartCubit extends Cubit<CartState> {
   CartCubit() : super(CartInitial());
 
   final String baseUrl = 'http://10.0.2.2:8000/api';
 
-  // Function to get auth token
   Future<String> _getAuthToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token') ?? '';  // Return token or empty string if not found
+    return prefs.getString('auth_token') ?? '';
   }
 
-  // Fetch the cart items
   Future<void> fetchCart() async {
     emit(CartLoading());
     try {
@@ -68,8 +67,10 @@ class CartCubit extends Cubit<CartState> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final total = data['total'] ?? 0.0;
-        emit(CartLoaded(cart: data['cart'], total: total));// Ensure 'cart' includes the correct total
+        final total = data['total'].toString();
+        emit(CartLoaded(
+            cart: data['cart'],
+            total: total));
       } else {
         emit(CartError(message: 'Failed to fetch cart'));
       }
@@ -78,7 +79,6 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  // Add item to the cart
   Future<void> addToCart(int productId, int quantity) async {
     emit(CartLoading());
     try {
@@ -96,7 +96,7 @@ class CartCubit extends Cubit<CartState> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         emit(CartUpdated(message: data['message']));
-        fetchCart(); // Refresh the cart after adding an item
+        fetchCart();
       } else {
         emit(CartError(message: 'Failed to add item to cart'));
       }
@@ -105,7 +105,6 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  // Edit cart item quantity
   Future<void> editCartItem(int cartItemId, int quantity) async {
     emit(CartLoading());
     try {
@@ -123,7 +122,7 @@ class CartCubit extends Cubit<CartState> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         emit(CartUpdated(message: data['message']));
-        fetchCart(); // Refresh cart after editing the item
+        fetchCart();
       } else {
         emit(CartError(message: 'Failed to edit cart item'));
       }
@@ -132,7 +131,6 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  // Delete cart item
   Future<void> deleteCartItem(int cartItemId) async {
     emit(CartLoading());
     try {
@@ -150,7 +148,7 @@ class CartCubit extends Cubit<CartState> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         emit(CartUpdated(message: data['message']));
-        fetchCart(); // Refresh cart after deletion
+        fetchCart();
       } else {
         emit(CartError(message: 'Failed to delete cart item'));
       }
@@ -159,7 +157,6 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  // Cancel the entire cart
   Future<void> cancelCart() async {
     emit(CartLoading());
     try {
@@ -173,8 +170,40 @@ class CartCubit extends Cubit<CartState> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         emit(CartCanceled(message: data['message']));
+        fetchCart();
       } else {
         emit(CartError(message: 'Failed to cancel cart'));
+      }
+    } catch (e) {
+      emit(CartError(message: e.toString()));
+    }
+  }
+
+
+  Future<void> createOrder(String paymentMethod, String? transactionId) async {
+    try {
+      emit(CartLoading());
+
+      String token = await _getAuthToken();
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/order/create'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'payment_method': paymentMethod,
+          'transaction_id': transactionId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        emit(OrderCreated(message: data['message']));
+        await fetchCart(); // Refresh the cart after order creation
+      } else {
+        emit(CartError(message: 'Failed to create order'));
       }
     } catch (e) {
       emit(CartError(message: e.toString()));

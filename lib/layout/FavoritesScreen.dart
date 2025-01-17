@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../Product/ProductScreen.dart';
 import '../cubit/FavoritesCubit.dart';
 
 class FavoritesScreen extends StatelessWidget {
@@ -28,12 +30,31 @@ class FavoritesScreen extends StatelessWidget {
                 itemCount: state.favorites.length,
                 itemBuilder: (context, index) {
                   final favorite = state.favorites[index];
+                  final product = favorite['product'];  // Accessing the 'product' field
+
                   return ListTile(
-                    title: Text(favorite['name'] ?? 'Unknown Product'),
-                    subtitle: Text(favorite['description'] ?? 'No description available'),
-                    leading: Icon(Icons.favorite, color: Colors.red),
+                    title: Text(product['name'] ?? 'No name available'),
+                    subtitle: Text(product['description'] ?? 'No description available'),
+                    leading: IconButton(
+                      icon: Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                      ),
+                      onPressed: () {
+                        // Remove from favorites and trigger UI update
+                        context.read<FavoritesCubit>().removeFromFavorites(product['id'].toString());
+                      },
+                    ),
                     onTap: () {
-                      // Handle tap event (optional)
+                      // Navigate to ProductDetailScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductDetailsScreen(
+                            productId: product['id'].toString(),
+                          ),
+                        ),
+                      );
                     },
                   );
                 },

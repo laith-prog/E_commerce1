@@ -87,6 +87,7 @@ class FavoritesCubit extends Cubit<FavoritesState> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        fetchFavorites();
         emit(FavoritesSuccess(message: data['message'], isFavorited: false));
       } else {
         emit(FavoritesError(message: 'Failed to remove product from favorites'));
@@ -114,6 +115,7 @@ class FavoritesCubit extends Cubit<FavoritesState> {
         final data = json.decode(response.body);
         emit(FavoritesLoaded(favorites: data['favorites']));
       } else {
+        print(response.body);
         emit(FavoritesError(message: 'Failed to fetch favorites'));
       }
     } catch (e) {
