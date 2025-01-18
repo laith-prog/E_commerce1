@@ -32,8 +32,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
         Uri.parse("$baseUrl/orders/$orderId"),
         headers: {'Authorization': 'Bearer $token'},
       );
-      print(response.statusCode);
-      print(response.body);
+
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -58,6 +57,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       print(token);
       if (response.statusCode == 200) {
         emit(state.copyWith(isLoading: false));
+      fetchOrderDetails(token, orderId);
       } else {
         emit(state.copyWith(isLoading: false, error: "Failed to cancel order"));
       }
@@ -79,9 +79,11 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       );
       print(response.statusCode);
       print(response.body);
+      print(token);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         emit(state.copyWith(isLoading: false, order: data['order']));
+      fetchOrderDetails(token, orderId);
       } else {
         emit(state.copyWith(isLoading: false, error: "Failed to edit order"));
       }

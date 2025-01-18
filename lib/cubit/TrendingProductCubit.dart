@@ -37,31 +37,66 @@ class ProductsState {
 }
 
 class ProductsCubit extends Cubit<ProductsState> {
+  int _currentPage = 1; // Track the current page
+  bool _hasMoreProducts = true; // Flag to check if there are more products
+  final int _perPage = 10; // Number of products per page
+
   ProductsCubit() : super(ProductsState());
 
-  Future<void> fetchAllProducts() async {
-    emit(state.copyWith(isLoading: true));
+  Future<void> fetchAllProducts({bool isPaginated = false}) async {
+    if (isPaginated) {
+      // Increment or decrement the page number when paginating
+      _currentPage++;
+    } else {
+      // Reset the page to 1 when initially fetching products
+      _currentPage = 1;
+    }
+
+    emit(state.copyWith(isLoading: true, message: '', allProducts: isPaginated ? state.allProducts : []));
 
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/products'),
+        Uri.parse('http://10.0.2.2:8000/api/products?page=$_currentPage'),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        emit(state.copyWith(
-          isSuccess: true,
-          allProducts: data['data'],
-          message: 'All products loaded successfully',
-        ));
+
+        // Check if there is more data to load
+        if (data['data'] != null && data['data'] is List) {
+          final newProducts = List.from(state.allProducts ?? [])
+            ..addAll(data['data']);
+
+          emit(state.copyWith(
+            isLoading: false,
+            isSuccess: true,
+            allProducts: newProducts,
+            message: 'Products loaded successfully',
+          ));
+
+          _hasMoreProducts = data['data'].length == _perPage; // Check if there are more pages
+        } else {
+          emit(state.copyWith(
+            isLoading: false,
+            message: 'Unexpected API response structure',
+          ));
+        }
       } else {
-        emit(state.copyWith(message: 'Failed to load all products'));
+        emit(state.copyWith(
+          isLoading: false,
+          message: 'Failed to load products: ${response.reasonPhrase}',
+        ));
       }
     } catch (e) {
-      emit(state.copyWith(message: 'Error: $e'));
+      emit(state.copyWith(
+        isLoading: false,
+        message: 'Error: $e',
+      ));
     }
   }
 
+  bool get hasMoreProducts => _hasMoreProducts;
+  int get currentPage => _currentPage;
   // Fetch trending and best-selling products from the API
   Future<void> fetchProducts() async {
     emit(ProductsState(isLoading: true));

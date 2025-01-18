@@ -34,30 +34,60 @@ class TrendingStoresState {
 }
 
 class TrendingStoresCubit extends Cubit<TrendingStoresState> {
+  int currentPage = 1; // Track the current page
+  bool hasMoreStores = true; // Track if there are more stores to load
+
   TrendingStoresCubit() : super(TrendingStoresState());
 
+  // Method to fetch all stores with pagination
   Future<void> fetchAllStores() async {
+    // Check if there are more stores to load
+    if (!hasMoreStores) return;
+
     emit(state.copyWith(isLoading: true));
 
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/stores'),
+        Uri.parse('http://10.0.2.2:8000/api/stores?page=$currentPage'),
       );
+      print(response.body);
+      print(response.statusCode);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        emit(state.copyWith(
-          isSuccess: true,
-          allStores: data['data'],
-          message: 'All stores loaded successfully',
-        ));
+        List<dynamic> fetchedStores = data['data'];
+
+        // If stores are available, update the state
+        if (fetchedStores.isNotEmpty) {
+          emit(state.copyWith(
+            isLoading: false,
+            isSuccess: true,
+            allStores: [...?state.allStores, ...fetchedStores], // Append new stores
+            message: 'All stores loaded successfully',
+          ));
+          currentPage++; // Increment the page for the next request
+        } else {
+          // If no stores are returned, stop pagination
+          hasMoreStores = false;
+          emit(state.copyWith(
+            isLoading: false,
+            message: 'No more stores available',
+          ));
+        }
       } else {
-        emit(state.copyWith(message: 'Failed to load all stores'));
+        emit(state.copyWith(
+          isLoading: false,
+          message: 'Failed to load all stores',
+        ));
       }
     } catch (e) {
-      emit(state.copyWith(message: 'Error: $e'));
+      emit(state.copyWith(
+        isLoading: false,
+        message: 'Error: $e',
+      ));
     }
   }
+
 
 
 

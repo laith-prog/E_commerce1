@@ -1,10 +1,14 @@
+import 'package:e_commerce1/cubit/TrendingProductCubit.dart';
+import 'package:e_commerce1/cubit/TrendingStoresCubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Auth/ProfilePage.dart';
 import '../Cart/CartScreen.dart';
+import '../Product/AllProductsScreen.dart';
 import '../cubit/CartCubit.dart';
 import '../cubit/ProfileCubit.dart';
+import '../stores/AllStoresScreen.dart';
 import 'Drawer/OrdersScreen.dart';
 import 'FavoritesScreen.dart';
 import 'HomeContentScreen.dart';
@@ -42,10 +46,14 @@ class _HomeScreenState extends State<HomeScreen> {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => CartCubit()),
+          BlocProvider(create: (context) => TrendingStoresCubit()),
+          BlocProvider(create: (context) => ProductsCubit()),
         ],
-        child: BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
+        child:
+            BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
           return Scaffold(
-            key: _scaffoldKey, // Set the scaffold key here
+            key: _scaffoldKey,
+            // Set the scaffold key here
             appBar: AppBar(
               backgroundColor: Color(0xFF2C2C2C),
               elevation: 0,
@@ -103,18 +111,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  BottomNavigationBarItem _buildNavItem({required IconData icon, required String label}) {
+  BottomNavigationBarItem _buildNavItem(
+      {required IconData icon, required String label}) {
     return BottomNavigationBarItem(
       icon: Container(
         padding: EdgeInsets.all(8), // Added padding around the icon
         decoration: BoxDecoration(
-          color: _currentIndex == _getIndexForLabel(label) ? Color(0xFFF47C7C) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12), // Rounded corners for the selected icon
+          color: _currentIndex == _getIndexForLabel(label)
+              ? Color(0xFFF47C7C)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(
+              12), // Rounded corners for the selected icon
         ),
         child: Icon(
           icon,
-          size: _currentIndex == _getIndexForLabel(label) ? 30 : 24, // Increase size for selected item
-          color: _currentIndex == _getIndexForLabel(label) ? Colors.white : Colors.grey,
+          size: _currentIndex == _getIndexForLabel(label) ? 30 : 24,
+          // Increase size for selected item
+          color: _currentIndex == _getIndexForLabel(label)
+              ? Colors.white
+              : Colors.grey,
         ),
       ),
       label: label,
@@ -165,7 +180,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: Color(0xFF4F4F4F), // Charcoal Gray for the border
+                    backgroundColor: Color(0xFF4F4F4F),
+                    // Charcoal Gray for the border
                     child: CircleAvatar(
                       radius: 36,
                       backgroundImage: NetworkImage(profile['profile_image'] ??
@@ -190,7 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       profile['phone_number'] ?? 'No phone number',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFFFAFAFA), // Off White for the phone number
+                        color: Color(0xFFFAFAFA),
+                        // Off White for the phone number
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -199,7 +216,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.person, color: Color(0xFFF47C7C)), // Warm Pink for icons
+              leading: Icon(Icons.person, color: Color(0xFFF47C7C)),
+              // Warm Pink for icons
               title: Text(
                 'Profile',
                 style: TextStyle(
@@ -216,7 +234,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
             ListTile(
-              leading: Icon(Icons.logout, color: Color(0xFFF47C7C)), // Warm Pink for icons
+              leading: Icon(Icons.logout, color: Color(0xFFF47C7C)),
+              // Warm Pink for icons
               title: Text(
                 'Logout',
                 style: TextStyle(
@@ -231,7 +250,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (token != null) {
                   await context.read<ProfileCubit>().signOut(token);
                   await prefs.remove('auth_token');
-                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/login', (route) => false);
                 }
               },
             ),
@@ -253,9 +273,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (token != null) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => OrdersScreen(token: token)),
+                    MaterialPageRoute(
+                        builder: (context) => OrdersScreen(token: token)),
                   );
                 }
+              },
+            ),
+            Divider(color: Color(0xFF4F4F4F)),
+
+            ListTile(
+              leading: Icon(Icons.store, color: Color(0xFFF47C7C)),
+              title: Text(
+                'All Stores',
+                style: TextStyle(
+                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
+                  fontSize: 16,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AllStoresScreen()),
+                );
+              },
+            ),
+            Divider(color: Color(0xFF4F4F4F)),
+            ListTile(
+              leading: Icon(Icons.shopping_bag, color: Color(0xFFF47C7C)),
+              title: Text(
+                'All Products',
+                style: TextStyle(
+                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
+                  fontSize: 16,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AllProductsScreen()),
+                );
               },
             ),
             Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
@@ -282,6 +338,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
             ),
+
             Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
           ],
         ),

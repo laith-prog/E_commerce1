@@ -16,6 +16,8 @@ class OrderDetailScreen extends StatefulWidget {
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   bool isEditing = false;
   String? updatedLocation;
+  String? updatedPaymentMethod;
+  String? updatedTransactionId;
   List<Map<String, dynamic>> updatedOrderItems = [];
 
   @override
@@ -36,7 +38,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               final order = state.order!;
               final orderItems = order['order_items'] as List<dynamic>;
 
-              // Initialize updated items only once
+              // Initialize updated values only once
               if (updatedOrderItems.isEmpty) {
                 updatedOrderItems = orderItems
                     .map((item) => {
@@ -46,6 +48,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   'price_at_time': item['price_at_time'],
                 })
                     .toList();
+                updatedLocation = order['delivery_location'];
+                updatedPaymentMethod = order['payment_method'];
+                updatedTransactionId = order['transaction_id'];
               }
 
               return Padding(
@@ -70,6 +75,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         Text("Status: ${order['status']}"),
         Text("Total Amount: \$${order['total_amount']}"),
         Text("Payment Method: ${order['payment_method']}"),
+        Text("Transaction ID: ${order['transaction_id']}"),
         Text("Delivery Location: ${order['delivery_location']}"),
         const SizedBox(height: 16),
         Text("Items:"),
@@ -115,7 +121,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               onPressed: () {
                 setState(() {
                   isEditing = true;
-                  updatedLocation = order['delivery_location'];
                 });
               },
               child: const Text("Edit Order"),
@@ -134,6 +139,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           initialValue: updatedLocation ?? "",
           decoration: const InputDecoration(labelText: "Delivery Location"),
           onChanged: (value) => updatedLocation = value,
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          initialValue: updatedPaymentMethod ?? "",
+          decoration: const InputDecoration(labelText: "Payment Method"),
+          onChanged: (value) => updatedPaymentMethod = value,
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          initialValue: updatedTransactionId ?? "",
+          decoration: const InputDecoration(labelText: "Transaction ID"),
+          onChanged: (value) => updatedTransactionId = value,
         ),
         const SizedBox(height: 16),
         Expanded(
