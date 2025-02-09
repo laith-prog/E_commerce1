@@ -13,14 +13,29 @@ class StoreDetailsScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => StoreCubit()..fetchStoreDetails(storeId),
       child: Scaffold(
-        backgroundColor: Color(0xFFF5F5F5),  // Lighter background color
+        backgroundColor: Color(0xFFFFF9F4), // Soft Beige background
         appBar: AppBar(
-          backgroundColor: Color(0xFFEB8F8F),  // Softer pink for the app bar
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFF47C7C), Color(0xFFD64A4A)], // Warm Pink to Deep Pink
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           title: BlocBuilder<StoreCubit, StoreState>(
             builder: (context, state) {
               return Text(
                 state.isLoading ? 'Loading...' : (state.store?['name'] ?? 'Store Details'),
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontFamily: 'Roboto', // Replace with your custom font
+                ),
               );
             },
           ),
@@ -28,14 +43,21 @@ class StoreDetailsScreen extends StatelessWidget {
         body: BlocBuilder<StoreCubit, StoreState>(
           builder: (context, state) {
             if (state.isLoading && state.products.isEmpty) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF47C7C)), // Warm Pink
+                ),
+              );
             }
 
             if (!state.isSuccess || state.store == null) {
               return Center(
                 child: Text(
                   state.message.isEmpty ? 'Failed to load store details' : state.message,
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF4F4F4F), // Charcoal Gray
+                  ),
                 ),
               );
             }
@@ -62,11 +84,31 @@ class StoreDetailsScreen extends StatelessWidget {
                     height: 200,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage(store['logo'] ?? 'https://via.placeholder.com/150'),
+                        image: NetworkImage(
+                            ('http://192.168.45.88:8000/storage/' + store['image'])),
                         fit: BoxFit.cover,
                       ),
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black26, offset: Offset(0, 4))],
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 10,
+                          color: Colors.black26,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withOpacity(0.4),
+                            Colors.transparent,
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -76,13 +118,18 @@ class StoreDetailsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF3A3A3A),  // Darker text for better contrast
+                      color: Color(0xFF4F4F4F), // Charcoal Gray
+                      fontFamily: 'Roboto', // Replace with your custom font
                     ),
                   ),
                   SizedBox(height: 12),
                   Text(
                     storeDescription,
-                    style: TextStyle(fontSize: 16, color: Color(0xFF636363)),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF4F4F4F).withOpacity(0.7), // Charcoal Gray with opacity
+                      fontFamily: 'Roboto', // Replace with your custom font
+                    ),
                   ),
                   SizedBox(height: 24),
                   // Show Products if available
@@ -92,7 +139,8 @@ class StoreDetailsScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF3A3A3A),
+                        color: Color(0xFF4F4F4F), // Charcoal Gray
+                        fontFamily: 'Roboto', // Replace with your custom font
                       ),
                     ),
                     SizedBox(height: 16),
@@ -121,22 +169,33 @@ class StoreDetailsScreen extends StatelessWidget {
                             );
                           },
                           child: Card(
-                            elevation: 8,  // Softer shadow for the product card
+                            elevation: 8, // Softer shadow for the product card
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            color: Color(0xFFFFFFFF),  // White background for card
+                            color: Colors.white, // White background for card
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Product Image with rounded corners
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(16),
+                                    topRight: Radius.circular(16),
+                                  ),
                                   child: Image.network(
-                                    product['image'] ?? 'https://via.placeholder.com/150',
-                                    height: 180,
+                                    ('http://192.168.45.88:8000/storage/' + product['image']) ?? 'https://via.placeholder.com/150',
+                                    height: 140, // Reduced height to prevent overflow
                                     width: double.infinity,
                                     fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        height: 140,
+                                        width: double.infinity,
+                                        color: Colors.grey[300],
+                                        child: Icon(Icons.error, color: Colors.red),
+                                      );
+                                    },
                                   ),
                                 ),
                                 Padding(
@@ -150,7 +209,8 @@ class StoreDetailsScreen extends StatelessWidget {
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
-                                          color: Color(0xFF4A4A4A),
+                                          color: Color(0xFF4F4F4F), // Charcoal Gray
+                                          fontFamily: 'Roboto', // Replace with your custom font
                                         ),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
@@ -160,9 +220,10 @@ class StoreDetailsScreen extends StatelessWidget {
                                       Text(
                                         '\$${product['price'] ?? '0.00'}',
                                         style: TextStyle(
-                                          color: Color(0xFFF29C11),  // Soft Gold for price
+                                          color: Color(0xFFF2C94C), // Muted Gold for price
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
+                                          fontFamily: 'Roboto', // Replace with your custom font
                                         ),
                                       ),
                                     ],
@@ -178,12 +239,20 @@ class StoreDetailsScreen extends StatelessWidget {
                     if (state.isLoading)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Center(child: CircularProgressIndicator()),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF47C7C)), // Warm Pink
+                          ),
+                        ),
                       ),
                   ] else
                     Text(
                       'No products available for this store.',
-                      style: TextStyle(fontSize: 16, color: Color(0xFF636363)),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF4F4F4F).withOpacity(0.7), // Charcoal Gray with opacity
+                        fontFamily: 'Roboto', // Replace with your custom font
+                      ),
                     ),
                 ],
               ),

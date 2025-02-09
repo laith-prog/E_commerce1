@@ -22,7 +22,7 @@ class OrderDetailsState {
 class OrderDetailsCubit extends Cubit<OrderDetailsState> {
   OrderDetailsCubit() : super(OrderDetailsState());
 
-  final String baseUrl = "http://10.0.2.2:8000/api";
+  final String baseUrl = "http://192.168.45.88:8000/api";
 
 
   Future<void> fetchOrderDetails(String token, int orderId) async {

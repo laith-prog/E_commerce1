@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../cubit/OrderDetailsCubit.dart';
 
 class OrderDetailScreen extends StatefulWidget {
@@ -25,15 +24,69 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return BlocProvider(
       create: (context) => OrderDetailsCubit()..fetchOrderDetails(widget.token, widget.orderId),
       child: Scaffold(
+        backgroundColor: Color(0xFFFAFAFA), // Off White background
         appBar: AppBar(
-          title: const Text('Order Details'),
+          title: const Text(
+            'Order Details',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white, // White text for contrast
+            ),
+          ),
+          backgroundColor: Color(0xFFF47C7C), // Warm Pink
+          elevation: 10,
+          shadowColor: Color(0xFFD64A4A).withOpacity(0.5), // Deep Pink shadow
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
+          ),
         ),
         body: BlocBuilder<OrderDetailsCubit, OrderDetailsState>(
           builder: (context, state) {
             if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF47C7C)), // Warm Pink
+                ),
+              );
             } else if (state.error != null) {
-              return Center(child: Text("Error: ${state.error}"));
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Color(0xFFD64A4A), // Deep Pink
+                      size: 50,
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      "Error: ${state.error}",
+                      style: TextStyle(
+                        color: Color(0xFFD64A4A), // Deep Pink
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () => context.read<OrderDetailsCubit>().fetchOrderDetails(widget.token, widget.orderId),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFF47C7C), // Warm Pink
+                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        "Retry",
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              );
             } else if (state.order != null) {
               final order = state.order!;
               final orderItems = order['order_items'] as List<dynamic>;
@@ -60,7 +113,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     : _buildOrderDetails(context, order, orderItems),
               );
             }
-            return const Center(child: Text("No order details available."));
+            return Center(
+              child: Text(
+                "No order details available.",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color(0xFF4F4F4F), // Charcoal Gray
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -71,14 +132,63 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Order ID: ${order['id']}"),
-        Text("Status: ${order['status']}"),
-        Text("Total Amount: \$${order['total_amount']}"),
-        Text("Payment Method: ${order['payment_method']}"),
-        Text("Transaction ID: ${order['transaction_id']}"),
-        Text("Delivery Location: ${order['delivery_location']}"),
-        const SizedBox(height: 16),
-        Text("Items:"),
+        Text(
+          "Order ID: ${order['id']}",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4F4F4F), // Charcoal Gray
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          "Status: ${order['status']}",
+          style: TextStyle(
+            fontSize: 16,
+            color: Color(0xFF4F4F4F), // Charcoal Gray
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          "Total Amount: \$${order['total_amount']}",
+          style: TextStyle(
+            fontSize: 16,
+            color: Color(0xFF4F4F4F), // Charcoal Gray
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          "Payment Method: ${order['payment_method']}",
+          style: TextStyle(
+            fontSize: 16,
+            color: Color(0xFF4F4F4F), // Charcoal Gray
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          "Transaction ID: ${order['transaction_id']}",
+          style: TextStyle(
+            fontSize: 16,
+            color: Color(0xFF4F4F4F), // Charcoal Gray
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          "Delivery Location: ${order['delivery_location']}",
+          style: TextStyle(
+            fontSize: 16,
+            color: Color(0xFF4F4F4F), // Charcoal Gray
+          ),
+        ),
+        SizedBox(height: 16),
+        Text(
+          "Items:",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4F4F4F), // Charcoal Gray
+          ),
+        ),
         Expanded(
           child: ListView.builder(
             itemCount: orderItems.length,
@@ -88,21 +198,50 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 3,
+                shadowColor: Color(0xFFE0E0E0).withOpacity(0.5), // Light Gray shadow
                 child: ListTile(
                   leading: Image.network(
-                    product['image'], // Adjust to your image fetching logic
+                    'http://192.168.45.88:8000/storage/' +product['image'], // Adjust to your image fetching logic
                     width: 50,
                     height: 50,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported),
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.image_not_supported,
+                      color: Color(0xFF4F4F4F), // Charcoal Gray
+                    ),
                   ),
-                  title: Text(product['name']),
-                  subtitle: Text(product['description']),
+                  title: Text(
+                    product['name'],
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4F4F4F), // Charcoal Gray
+                    ),
+                  ),
+                  subtitle: Text(
+                    product['description'],
+                    style: TextStyle(
+                      color: Color(0xFF4F4F4F).withOpacity(0.7), // Charcoal Gray with opacity
+                    ),
+                  ),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Qty: ${item['quantity']}"),
-                      Text("\$${item['price_at_time']}"),
+                      Text(
+                        "Qty: ${item['quantity']}",
+                        style: TextStyle(
+                          color: Color(0xFF4F4F4F), // Charcoal Gray
+                        ),
+                      ),
+                      Text(
+                        "\$${item['price_at_time']}",
+                        style: TextStyle(
+                          color: Color(0xFF4F4F4F), // Charcoal Gray
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -110,12 +249,23 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             },
           ),
         ),
+        SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ElevatedButton(
               onPressed: () => context.read<OrderDetailsCubit>().cancelOrder(widget.token, widget.orderId),
-              child: const Text("Cancel Order"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFD64A4A), // Deep Pink
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                "Cancel Order",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -123,7 +273,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   isEditing = true;
                 });
               },
-              child: const Text("Edit Order"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFF47C7C), // Warm Pink
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                "Edit Order",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -137,22 +297,40 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       children: [
         TextFormField(
           initialValue: updatedLocation ?? "",
-          decoration: const InputDecoration(labelText: "Delivery Location"),
+          decoration: InputDecoration(
+            labelText: "Delivery Location",
+            labelStyle: TextStyle(color: Color(0xFF4F4F4F)), // Charcoal Gray
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           onChanged: (value) => updatedLocation = value,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         TextFormField(
           initialValue: updatedPaymentMethod ?? "",
-          decoration: const InputDecoration(labelText: "Payment Method"),
+          decoration: InputDecoration(
+            labelText: "Payment Method",
+            labelStyle: TextStyle(color: Color(0xFF4F4F4F)), // Charcoal Gray
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           onChanged: (value) => updatedPaymentMethod = value,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         TextFormField(
           initialValue: updatedTransactionId ?? "",
-          decoration: const InputDecoration(labelText: "Transaction ID"),
+          decoration: InputDecoration(
+            labelText: "Transaction ID",
+            labelStyle: TextStyle(color: Color(0xFF4F4F4F)), // Charcoal Gray
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           onChanged: (value) => updatedTransactionId = value,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Expanded(
           child: ListView.builder(
             itemCount: updatedOrderItems.length,
@@ -161,14 +339,33 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 3,
+                shadowColor: Color(0xFFE0E0E0).withOpacity(0.5), // Light Gray shadow
                 child: ListTile(
-                  title: Text("Product ID: ${item['product_id']}"),
-                  subtitle: Text("Price: \$${item['price_at_time']}"),
+                  title: Text(
+                    "Product ID: ${item['product_id']}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4F4F4F), // Charcoal Gray
+                    ),
+                  ),
+                  subtitle: Text(
+                    "Price: \$${item['price_at_time']}",
+                    style: TextStyle(
+                      color: Color(0xFF4F4F4F).withOpacity(0.7), // Charcoal Gray with opacity
+                    ),
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.remove),
+                        icon: Icon(
+                          Icons.remove,
+                          color: Color(0xFFF47C7C), // Warm Pink
+                        ),
                         onPressed: () {
                           setState(() {
                             if (item['quantity'] > 1) {
@@ -177,9 +374,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           });
                         },
                       ),
-                      Text("${item['quantity']}"),
+                      Text(
+                        "${item['quantity']}",
+                        style: TextStyle(
+                          color: Color(0xFF4F4F4F), // Charcoal Gray
+                        ),
+                      ),
                       IconButton(
-                        icon: const Icon(Icons.add),
+                        icon: Icon(
+                          Icons.add,
+                          color: Color(0xFFF47C7C), // Warm Pink
+                        ),
                         onPressed: () {
                           setState(() {
                             item['quantity']++;
@@ -193,6 +398,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             },
           ),
         ),
+        SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -202,7 +408,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   isEditing = false;
                 });
               },
-              child: const Text("Cancel"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF4F4F4F), // Charcoal Gray
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                "Cancel",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -215,7 +431,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   isEditing = false;
                 });
               },
-              child: const Text("Save Changes"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFF47C7C), // Warm Pink
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                "Save Changes",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
             ),
           ],
         ),

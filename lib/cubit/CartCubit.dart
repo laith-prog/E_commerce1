@@ -43,7 +43,7 @@ class OrderCreated extends CartState {
 class CartCubit extends Cubit<CartState> {
   CartCubit() : super(CartInitial());
 
-  final String baseUrl = 'http://10.0.2.2:8000/api';
+  final String baseUrl = 'http://192.168.45.88:8000/api';
 
   Future<String> _getAuthToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

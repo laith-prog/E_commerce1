@@ -18,15 +18,68 @@ class ProductDetailsScreen extends StatelessWidget {
         builder: (context, state) {
           if (state.isLoading) {
             return Scaffold(
-              appBar: AppBar(title: Text('Product Details')),
-              body: Center(child: CircularProgressIndicator()),
+              appBar: AppBar(
+                title: Text(
+                  'Product Details',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: 'Roboto', // Replace with your custom font
+                  ),
+                ),
+                backgroundColor: Colors.transparent,
+                flexibleSpace: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFF47C7C), Color(0xFFD64A4A)], // Warm Pink to Deep Pink
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+              ),
+              body: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF47C7C)), // Warm Pink
+                ),
+              ),
             );
           }
 
           if (!state.isSuccess || state.productDetails == null) {
             return Scaffold(
-              appBar: AppBar(title: Text('Product Details')),
-              body: Center(child: Text(state.message)),
+              appBar: AppBar(
+                title: Text(
+                  'Product Details',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: 'Roboto', // Replace with your custom font
+                  ),
+                ),
+                backgroundColor: Colors.transparent,
+                flexibleSpace: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFF47C7C), Color(0xFFD64A4A)], // Warm Pink to Deep Pink
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+              ),
+              body: Center(
+                child: Text(
+                  state.message,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF4F4F4F), // Charcoal Gray
+                    fontFamily: 'Roboto', // Replace with your custom font
+                  ),
+                ),
+              ),
             );
           }
 
@@ -35,11 +88,25 @@ class ProductDetailsScreen extends StatelessWidget {
 
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: Color(0xFFF47C7C), // Warm Pink
-              elevation: 6,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFF47C7C), Color(0xFFD64A4A)], // Warm Pink to Deep Pink
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
               title: Text(
                 product['name'] ?? 'Product Details',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF4F4F4F)), // Charcoal Gray
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontFamily: 'Roboto', // Replace with your custom font
+                ),
               ),
             ),
             backgroundColor: Color(0xFFFFF9F4), // Soft Beige
@@ -54,6 +121,7 @@ class ProductDetailsScreen extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: Container(
+                          width: double.infinity, // Ensure the container takes full width
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
@@ -63,10 +131,28 @@ class ProductDetailsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: Image.network(
-                            product['image'] ?? 'https://via.placeholder.com/300',
-                            height: 300,
-                            fit: BoxFit.contain,
+                          child: Stack(
+                            children: [
+                              Image.network(
+                                ('http://192.168.45.88:8000/storage/' + product['image']) ?? 'https://via.placeholder.com/300',
+                                width: double.infinity, // Ensure the image takes full width
+                                height: 300, // Fixed height for the image
+                                fit: BoxFit.cover, // Ensure the image covers the container
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.black.withOpacity(0.4),
+                                      Colors.transparent,
+                                    ],
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -80,6 +166,7 @@ class ProductDetailsScreen extends StatelessWidget {
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF4F4F4F), // Charcoal Gray
+                        fontFamily: 'Roboto', // Replace with your custom font
                       ),
                     ),
                     SizedBox(height: 8),
@@ -91,6 +178,7 @@ class ProductDetailsScreen extends StatelessWidget {
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFFF2C94C), // Muted Gold
+                        fontFamily: 'Roboto', // Replace with your custom font
                       ),
                     ),
                     SizedBox(height: 16),
@@ -106,7 +194,11 @@ class ProductDetailsScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
                           product['description'] ?? 'No description available',
-                          style: TextStyle(fontSize: 16, color: Color(0xFF636363)),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF4F4F4F).withOpacity(0.7), // Charcoal Gray with opacity
+                            fontFamily: 'Roboto', // Replace with your custom font
+                          ),
                         ),
                       ),
                     ),
@@ -120,6 +212,7 @@ class ProductDetailsScreen extends StatelessWidget {
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF4F4F4F), // Charcoal Gray
+                          fontFamily: 'Roboto', // Replace with your custom font
                         ),
                       ),
                       SizedBox(height: 8),
@@ -144,7 +237,12 @@ class ProductDetailsScreen extends StatelessWidget {
                         },
                         child: Text(
                           'View Store Details',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontFamily: 'Roboto', // Replace with your custom font
+                          ),
                         ),
                       ),
                     ],
@@ -172,17 +270,29 @@ class ProductDetailsScreen extends StatelessWidget {
       children: [
         Text(
           'Store Name: ${store['name'] ?? 'Unknown Store'}',
-          style: TextStyle(fontSize: 18, color: Color(0xFF636363)),
+          style: TextStyle(
+            fontSize: 18,
+            color: Color(0xFF4F4F4F).withOpacity(0.7), // Charcoal Gray with opacity
+            fontFamily: 'Roboto', // Replace with your custom font
+          ),
         ),
         SizedBox(height: 8),
         Text(
           'Location: ${store['location'] ?? 'No location available'}',
-          style: TextStyle(fontSize: 18, color: Color(0xFF636363)),
+          style: TextStyle(
+            fontSize: 18,
+            color: Color(0xFF4F4F4F).withOpacity(0.7), // Charcoal Gray with opacity
+            fontFamily: 'Roboto', // Replace with your custom font
+          ),
         ),
         SizedBox(height: 8),
         Text(
           'Store Description: ${store['description'] ?? 'No description available'}',
-          style: TextStyle(fontSize: 18, color: Color(0xFF636363)),
+          style: TextStyle(
+            fontSize: 18,
+            color: Color(0xFF4F4F4F).withOpacity(0.7), // Charcoal Gray with opacity
+            fontFamily: 'Roboto', // Replace with your custom font
+          ),
         ),
       ],
     );
@@ -195,11 +305,17 @@ class ProductDetailsScreen extends StatelessWidget {
         listener: (context, addToCartState) {
           if (addToCartState.isSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(addToCartState.message)),
+              SnackBar(
+                content: Text(addToCartState.message),
+                backgroundColor: Color(0xFFF2C94C), // Muted Gold
+              ),
             );
           } else if (addToCartState.message.isNotEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(addToCartState.message)),
+              SnackBar(
+                content: Text(addToCartState.message),
+                backgroundColor: Color(0xFFD64A4A), // Deep Pink
+              ),
             );
           }
         },
@@ -219,7 +335,12 @@ class ProductDetailsScreen extends StatelessWidget {
                 ? CircularProgressIndicator(color: Colors.white)
                 : Text(
               'Add to Cart',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontFamily: 'Roboto', // Replace with your custom font
+              ),
             ),
           );
         },
@@ -234,11 +355,17 @@ class ProductDetailsScreen extends StatelessWidget {
         listener: (context, favoritesState) {
           if (favoritesState is FavoritesSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(favoritesState.message)),
+              SnackBar(
+                content: Text(favoritesState.message),
+                backgroundColor: Color(0xFFF2C94C), // Muted Gold
+              ),
             );
           } else if (favoritesState is FavoritesError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(favoritesState.message)),
+              SnackBar(
+                content: Text(favoritesState.message),
+                backgroundColor: Color(0xFFD64A4A), // Deep Pink
+              ),
             );
           }
         },
@@ -250,7 +377,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   : Icons.favorite_border,
               color: favoritesState is FavoritesSuccess && favoritesState.isFavorited
                   ? Color(0xFFD64A4A) // Deep Pink for favorite
-                  : Color(0xFF636363), // Charcoal Gray for non-favorite
+                  : Color(0xFF4F4F4F), // Charcoal Gray for non-favorite
             ),
             onPressed: () {
               if (favoritesState is FavoritesSuccess && favoritesState.isFavorited) {

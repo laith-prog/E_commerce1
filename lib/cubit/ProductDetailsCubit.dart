@@ -24,7 +24,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/products/id/$productId'), // Replace with your API URL
+        Uri.parse('http://192.168.45.88:8000/api/products/id/$productId'), // Replace with your API URL
       );
 
       if (response.statusCode == 200) {

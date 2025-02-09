@@ -18,7 +18,7 @@ class OtpCubit extends Cubit<OtpState> {
     emit(OtpState(isLoading: true));
 
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/auth/send-otp'),
+      Uri.parse('http://192.168.45.88:8000/api/auth/send-otp'),
       body: {'phone_number': phoneNumber},
     );
 
@@ -35,7 +35,7 @@ class OtpCubit extends Cubit<OtpState> {
     emit(OtpState(isLoading: true));
 
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/auth/verify-otp'),
+      Uri.parse('http://192.168.45.88:8000/api/auth/verify-otp'),
       body: {'phone_number': phoneNumber, 'otp': otp},
     );
 

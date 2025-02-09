@@ -52,8 +52,9 @@ class ProfilePage extends StatelessWidget {
             String phoneNumber =
                 profile['phone_number'] ?? 'No phone number provided';
             String location = profile['location'] ?? 'Location not specified';
-            String profileImage = profile['profile_image'] ??
-                'https://via.placeholder.com/150';
+            String profileImage = profile['profile_image'] != null
+                ? 'http://192.168.45.88:8000/storage/' + profile['profile_image']
+                : 'https://via.placeholder.com/150';
 
             return SingleChildScrollView(
               child: Column(
@@ -104,7 +105,6 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 30),
-
                   // Profile Details Section
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -163,7 +163,6 @@ class ProfilePage extends StatelessWidget {
                               ],
                             ),
                             SizedBox(height: 30),
-
                             // Edit Profile Button
                             GestureDetector(
                               onTap: () {
@@ -209,7 +208,9 @@ class ProfilePage extends StatelessWidget {
                   // Additional Options (Optional Section)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Divider(thickness: 1, color: Color(0xFFE0E0E0)), // Light Gray divider
+                    child: Divider(
+                        thickness: 1,
+                        color: Color(0xFFE0E0E0)), // Light Gray divider
                   ),
 
                   SizedBox(height: 20),

@@ -21,8 +21,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-
-  // Create a GlobalKey for the Scaffold to manage the drawer
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<Widget> _screens = [
@@ -49,19 +47,28 @@ class _HomeScreenState extends State<HomeScreen> {
           BlocProvider(create: (context) => TrendingStoresCubit()),
           BlocProvider(create: (context) => ProductsCubit()),
         ],
-        child:
-            BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
+        child: BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
           return Scaffold(
             key: _scaffoldKey,
-            // Set the scaffold key here
             appBar: AppBar(
-              backgroundColor: Color(0xFF2C2C2C),
+              backgroundColor: Colors.transparent,
               elevation: 0,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFF47C7C), Color(0xFFD64A4A)], // Warm Pink to Deep Pink
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
               title: Text(
                 _screenTitles[_currentIndex],
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                  fontFamily: 'Roboto', // Replace with your custom font
                 ),
               ),
               centerTitle: true,
@@ -77,59 +84,73 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: IconButton(
                 icon: Icon(Icons.menu, color: Colors.white),
                 onPressed: () {
-                  // Use the scaffold key to open the drawer
                   _scaffoldKey.currentState?.openDrawer();
                 },
               ),
             ),
             drawer: _buildDrawer(context, state),
             body: _screens[_currentIndex],
-            bottomNavigationBar: BottomNavigationBar(
-              backgroundColor: Color(0xFF2C2C2C),
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-                if (_currentIndex == 2) {
-                  context.read<CartCubit>().fetchCart();
-                }
-              },
-              selectedItemColor: Color(0xFFF47C7C),
-              unselectedItemColor: Colors.grey,
-              type: BottomNavigationBarType.fixed,
-              items: [
-                _buildNavItem(icon: Icons.home, label: 'Home'),
-                _buildNavItem(icon: Icons.search, label: 'Search'),
-                _buildNavItem(icon: Icons.shopping_cart, label: 'Cart'),
-                _buildNavItem(icon: Icons.favorite, label: 'Favorites'),
-              ],
+            bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF47C7C), Color(0xFFD64A4A)], // Warm Pink to Deep Pink
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: BottomNavigationBar(
+                backgroundColor: Colors.transparent,
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                  if (_currentIndex == 2) {
+                    context.read<CartCubit>().fetchCart();
+                  }
+                },
+                selectedItemColor: Colors.white,
+                unselectedItemColor: Colors.grey[300],
+                type: BottomNavigationBarType.fixed,
+                items: [
+                  _buildNavItem(icon: Icons.home, label: 'Home'),
+                  _buildNavItem(icon: Icons.search, label: 'Search'),
+                  _buildNavItem(icon: Icons.shopping_cart, label: 'Cart'),
+                  _buildNavItem(icon: Icons.favorite, label: 'Favorites'),
+                ],
+              ),
             ),
+            // Refresh profile data when the drawer is opened
+            onDrawerChanged: (isOpened) {
+              if (isOpened) {
+                context.read<ProfileCubit>().fetchProfile();
+              }
+            },
           );
         }),
       ),
     );
   }
 
-  BottomNavigationBarItem _buildNavItem(
-      {required IconData icon, required String label}) {
+  BottomNavigationBarItem _buildNavItem({required IconData icon, required String label}) {
     return BottomNavigationBarItem(
       icon: Container(
-        padding: EdgeInsets.all(8), // Added padding around the icon
+        padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: _currentIndex == _getIndexForLabel(label)
-              ? Color(0xFFF47C7C)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(
-              12), // Rounded corners for the selected icon
+          color: _currentIndex == _getIndexForLabel(label) ? Colors.white.withOpacity(0.2) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
           icon,
           size: _currentIndex == _getIndexForLabel(label) ? 30 : 24,
-          // Increase size for selected item
-          color: _currentIndex == _getIndexForLabel(label)
-              ? Colors.white
-              : Colors.grey,
+          color: _currentIndex == _getIndexForLabel(label) ? Colors.white : Colors.grey[300],
         ),
       ),
       label: label,
@@ -173,19 +194,25 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Color(0xFFF47C7C), // Warm Pink for the header background
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF47C7C), Color(0xFFD64A4A)], // Warm Pink to Deep Pink
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: Color(0xFF4F4F4F),
-                    // Charcoal Gray for the border
+                    backgroundColor: Color(0xFF4F4F4F), // Charcoal Gray for the border
                     child: CircleAvatar(
                       radius: 36,
-                      backgroundImage: NetworkImage(profile['profile_image'] ??
-                          'https://via.placeholder.com/150'),
+                      backgroundImage: NetworkImage(
+                        profile['profile_image'] != null
+                            ? 'http://192.168.45.88:8000/storage/' + profile['profile_image']
+                            : 'https://via.placeholder.com/150',
+                      ),
                     ),
                   ),
                   SizedBox(height: 10),
@@ -195,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
-                        color: Colors.white, // White text for the name
+                        color: Colors.white,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -206,8 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       profile['phone_number'] ?? 'No phone number',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFFFAFAFA),
-                        // Off White for the phone number
+                        color: Color(0xFFFAFAFA), // Off White for the phone number
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -215,57 +241,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.person, color: Color(0xFFF47C7C)),
-              // Warm Pink for icons
-              title: Text(
-                'Profile',
-                style: TextStyle(
-                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
-                  fontSize: 16,
-                ),
-              ),
+            _buildDrawerItem(
+              icon: Icons.person,
+              title: 'Profile',
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
+                ).then((_) {
+                  // Refresh profile data after returning from the edit profile screen
+                  context.read<ProfileCubit>().fetchProfile();
+                });
               },
             ),
-            Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
-            ListTile(
-              leading: Icon(Icons.logout, color: Color(0xFFF47C7C)),
-              // Warm Pink for icons
-              title: Text(
-                'Logout',
-                style: TextStyle(
-                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
-                  fontSize: 16,
-                ),
-              ),
-              onTap: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                String? token = prefs.getString('auth_token');
-
-                if (token != null) {
-                  await context.read<ProfileCubit>().signOut(token);
-                  await prefs.remove('auth_token');
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/login', (route) => false);
-                }
-              },
-            ),
-            Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
-            ListTile(
-              leading: Icon(Icons.list_alt_outlined, color: Color(0xFFF47C7C)),
-              // Warm Pink for icons
-              title: Text(
-                'My Orders',
-                style: TextStyle(
-                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
-                  fontSize: 16,
-                ),
-              ),
+            Divider(color: Color(0xFF4F4F4F)), // Charcoal Gray for dividers
+            _buildDrawerItem(
+              icon: Icons.list_alt_outlined,
+              title: 'My Orders',
               onTap: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 String? token = prefs.getString('auth_token');
@@ -273,23 +265,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (token != null) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => OrdersScreen(token: token)),
+                    MaterialPageRoute(builder: (context) => OrdersScreen(token: token)),
                   );
                 }
               },
             ),
             Divider(color: Color(0xFF4F4F4F)),
-
-            ListTile(
-              leading: Icon(Icons.store, color: Color(0xFFF47C7C)),
-              title: Text(
-                'All Stores',
-                style: TextStyle(
-                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
-                  fontSize: 16,
-                ),
-              ),
+            _buildDrawerItem(
+              icon: Icons.store,
+              title: 'All Stores',
               onTap: () {
                 Navigator.push(
                   context,
@@ -298,15 +282,9 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             Divider(color: Color(0xFF4F4F4F)),
-            ListTile(
-              leading: Icon(Icons.shopping_bag, color: Color(0xFFF47C7C)),
-              title: Text(
-                'All Products',
-                style: TextStyle(
-                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
-                  fontSize: 16,
-                ),
-              ),
+            _buildDrawerItem(
+              icon: Icons.shopping_bag,
+              title: 'All Products',
               onTap: () {
                 Navigator.push(
                   context,
@@ -314,18 +292,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
-
-            ListTile(
-              leading: Icon(Icons.logout, color: Color(0xFFF47C7C)),
-              // Warm Pink for icons
-              title: Text(
-                'Logout',
-                style: TextStyle(
-                  color: Color(0xFF4F4F4F), // Charcoal Gray for text
-                  fontSize: 16,
-                ),
-              ),
+            Divider(color: Color(0xFF4F4F4F)),
+            _buildDrawerItem(
+              icon: Icons.logout,
+              title: 'Logout',
               onTap: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 String? token = prefs.getString('auth_token');
@@ -333,16 +303,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (token != null) {
                   await context.read<ProfileCubit>().signOut(token);
                   await prefs.remove('auth_token');
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/login', (route) => false);
+                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
                 }
               },
             ),
-
-            Divider(color: Color(0xFF4F4F4F)), // Light Gray for dividers
+            Divider(color: Color(0xFF4F4F4F)),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDrawerItem({required IconData icon, required String title, required VoidCallback onTap}) {
+    return ListTile(
+      leading: Icon(icon, color: Color(0xFFF47C7C)), // Warm Pink for icons
+      title: Text(
+        title,
+        style: TextStyle(
+          color: Color(0xFF4F4F4F), // Charcoal Gray for text
+          fontSize: 16,
+          fontFamily: 'Roboto', // Replace with your custom font
+        ),
+      ),
+      onTap: onTap,
     );
   }
 }

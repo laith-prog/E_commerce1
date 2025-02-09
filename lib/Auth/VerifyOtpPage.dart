@@ -22,7 +22,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   Future<void> verifyOtp(String otp) async {
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/auth/verify-otp'),
+      Uri.parse('http://192.168.45.88:8000/api/auth/verify-otp'),
       body: {
         'phone_number': widget.phoneNumber,
         'otp': otp,

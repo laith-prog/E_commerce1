@@ -33,7 +33,7 @@ class StoreSearchCubit extends Cubit<StoreSearchState> {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://10.0.2.2:8000/api/stores/search?query=$query&page=$_page&per_page=$_pageSize'),
+            'http://192.168.45.88:8000/api/stores/search?query=$query&page=$_page&per_page=$_pageSize'),
       );
 
       if (response.statusCode == 200) {

@@ -56,7 +56,7 @@ class ProductsCubit extends Cubit<ProductsState> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/products?page=$_currentPage'),
+        Uri.parse('http://192.168.45.88:8000/api/products?page=$_currentPage'),
       );
 
       if (response.statusCode == 200) {
@@ -103,10 +103,10 @@ class ProductsCubit extends Cubit<ProductsState> {
 
     try {
       final trendingResponse = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/products/trending'), // Replace with your API URL
+        Uri.parse('http://192.168.45.88:8000/api/products/trending'), // Replace with your API URL
       );
       final bestSellingResponse = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/products/most-selling'), // Replace with your API URL
+        Uri.parse('http://192.168.45.88:8000/api/products/most-selling'), // Replace with your API URL
       );
 
       if (trendingResponse.statusCode == 200 && bestSellingResponse.statusCode == 200) {

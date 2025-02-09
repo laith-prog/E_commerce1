@@ -30,7 +30,7 @@ class FavoritesError extends FavoritesState {
 class FavoritesCubit extends Cubit<FavoritesState> {
   FavoritesCubit() : super(FavoritesInitial());
 
-  final String baseUrl = 'http://10.0.2.2:8000/api'; // Replace with your API URL
+  final String baseUrl = 'http://192.168.45.88:8000/api'; // Replace with your API URL
 
   // Function to get auth token
   Future<String> _getAuthToken() async {

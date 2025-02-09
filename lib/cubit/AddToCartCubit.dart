@@ -37,7 +37,7 @@ class AddToCartCubit extends Cubit<AddToCartState> {
       }
 
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/cart/add'),  // Replace with your API URL
+        Uri.parse('http://192.168.45.88:8000/api/cart/add'),  // Replace with your API URL
         headers: {
           'Authorization': 'Bearer $token',  // Add the Bearer token for authentication
         },

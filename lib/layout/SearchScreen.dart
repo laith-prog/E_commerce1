@@ -202,14 +202,14 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.grey[200],
-                        image: product['image'] != null
+                        image: 'http://192.168.45.88:8000/storage/' +product['image'] != null
                             ? DecorationImage(
-                          image: NetworkImage(product['image']),
+                          image: NetworkImage('http://192.168.45.88:8000/storage/' +product['image']),
                           fit: BoxFit.cover,
                         )
                             : null,
                       ),
-                      child: product['image'] == null
+                      child: 'http://192.168.45.88:8000/storage/' + product['image'] == null
                           ? Icon(Icons.image_not_supported, color: Colors.grey)
                           : null,
                     ),
@@ -309,11 +309,11 @@ class _SearchScreenContentState extends State<SearchScreenContent> {
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.grey[200],
                       ),
-                      child: store['logo'] != null
+                      child: 'http://192.168.45.88:8000/storage/' + store['image'] != null
                           ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network(
-                          store['logo'],
+                          'http://192.168.45.88:8000/storage/' + store['image'],
                           fit: BoxFit.cover,
                           width: 70,
                           height: 70,
